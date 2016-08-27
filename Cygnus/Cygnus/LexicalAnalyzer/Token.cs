@@ -48,5 +48,8 @@
         EndOfLine,
         Comments,
         No_Arg,
+        Continue,
+        Pass,
+        Try, Catch, Finally
     };
 }

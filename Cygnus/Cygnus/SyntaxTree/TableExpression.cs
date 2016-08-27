@@ -2,7 +2,7 @@
 using Cygnus.Errors;
 namespace Cygnus.SyntaxTree
 {
-    public class TableExpression : Expression
+    public class TableExpression : Expression, ITable
     {
         public TableExpression Parent { get; set; }
         public Dictionary<string, Expression> Properties { get; private set; }
@@ -13,6 +13,19 @@ namespace Cygnus.SyntaxTree
                 return ExpressionType.Table;
             }
         }
+        public Expression this[string Name]
+        {
+            get
+            {
+                return Find(Name);
+            }
+
+            set
+            {
+                Assign(Name, value);
+            }
+        }
+
         public Expression Find(string key)
         {
             TableExpression current = this;
@@ -36,11 +49,16 @@ namespace Cygnus.SyntaxTree
             }
             throw new NotDefinedException(key);
         }
-        public TableExpression(KeyValuePair<string, Expression>[] properties)
+        public TableExpression(params KeyValuePair<string, Expression>[] properties)
         {
             Properties = new Dictionary<string, Expression>(properties.Length);
             foreach (var kvp in properties)
                 Properties.Add(kvp.Key, kvp.Value);
+        }
+        public TableExpression Append(string Name,Expression property)
+        {
+            Properties.Add(Name, property);
+            return this;
         }
         public override Expression Eval(Scope scope)
         {
